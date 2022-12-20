@@ -1,0 +1,23 @@
+az --version   # >= 2.40.0
+
+az login
+az account show
+$subscriptionId=$(az account show --query "id" --output tsv)
+echo $subscriptionId
+
+az vm list-usage --location westeurope --output table  # Total Regional vCPUs       >= 16
+                                                       # Standard DSv4 Family vCPUs >= 16
+
+az provider register --namespace Microsoft.HybridCompute --wait
+az provider register --namespace Microsoft.GuestConfiguration --wait
+az provider register --namespace Microsoft.AzureArcData --wait
+az provider register --namespace Microsoft.OperationsManagement --wait
+
+spn=$(az ad sp create-for-rbac --name 'ArcBoxSPN' --role "Owner" --scopes /subscriptions/$subscriptionId)
+spnClientId=$(echo $spn | jq .appId | tr -d '"')
+spnClientSecret=$(echo $spn | jq .password | tr -d '"')
+spnTenantId=$(az account show --query "tenantId" --output tsv)
+
+echo -e "\nspnClientId     $spnClientId\nspnClientSecret $spnClientSecret\nspnTenantId     $spnTenantId\n"
+
+cat ~/.ssh/id_rsa.pub

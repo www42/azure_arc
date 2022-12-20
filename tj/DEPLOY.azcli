@@ -1,0 +1,6 @@
+$rgName='ArcBox-RG'
+$location='westeurope'
+
+az group create --name $rgName --location $location
+
+az deploymant group create --template-file main.bicep --parameters main.parameters.json --resource-group $rgName
