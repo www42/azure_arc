@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sshRSAPublicKey": {
+            "value": "sh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCfm0y1gZTjwTpbHpTg1ECHGOBSyYE6RFChjWWH4aEm3wpxeSUgO9525l7c5XqhL4zgTuehNGSkUxAp6gBGfdH8G1JThAG9LXYtmrrodDbTZBO4+8/my4AH8fa4j9Ao9AQJxX4ldeq0jx31NSn9UvkDKJVGTHVyrwujQMK7fRcPh1yXA/gkijyaAiyNzvwaWJe8sgPXZ7XkcEgZMwCrsXGMGrAhQ0LxD1H2tSpKYLu0s+N4JeHdXx1ATPqaHhcNA0tLbfDzo8s8ckqLtYiTu0gmNciUIG1zAeebIwmm0Xu6fYv/wxU+w8LBr0ooA732K0+uQOGCJnq5p+UyFKzNHJWxt"
+        },
+        "spnClientId": {
+            "value": "d36bd1cc-a0bd-4aa0-960c-b14e83f6d3c9"
+        },
+        "spnClientSecret": {
+            "value": "B4_8Q~oY3WrVHvwMI-EV2zq8sSCPDX35uoGdZbhD"
+        },
+        "spnTenantId": {
+            "value": "819ebf55-0973-4703-b006-581a48f25961"
+        },
+        "windowsAdminUsername": {
+            "value": "arcdemo"
+        },
+        "windowsAdminPassword": {
+            "value": ""
+        },
+        "logAnalyticsWorkspaceName": {
+            "value": "arcbox691182"
+        },
+        "flavor": {
+            "value":  "ITPro"
+        },
+        "deployBastion": {
+            "value": true
+        }
+    }
+}

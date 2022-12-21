@@ -3,4 +3,4 @@ $location='westeurope'
 
 az group create --name $rgName --location $location
 
-az deploymant group create --template-file main.bicep --parameters main.parameters.json --resource-group $rgName
+az deployment group create --template-file ..\azure_jumpstart_arcbox\bicep\main.bicep --parameters main.parameters.json --resource-group $rgName

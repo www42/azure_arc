@@ -1,23 +1,51 @@
-az --version   # >= 2.40.0
+#! /usr/bin/pwsh
+
+az --version
+    # >= 2.40.0
 
 az login
-az account show
-$subscriptionId=$(az account show --query "id" --output tsv)
-echo $subscriptionId
+$subscription = az account show | ConvertFrom-Json
 
-az vm list-usage --location westeurope --output table  # Total Regional vCPUs       >= 16
-                                                       # Standard DSv4 Family vCPUs >= 16
+az vm list-usage --location westeurope --output table
+    # Total Regional vCPUs       >= 16
+    # Standard DSv4 Family vCPUs >= 16
 
 az provider register --namespace Microsoft.HybridCompute --wait
 az provider register --namespace Microsoft.GuestConfiguration --wait
 az provider register --namespace Microsoft.AzureArcData --wait
 az provider register --namespace Microsoft.OperationsManagement --wait
 
-spn=$(az ad sp create-for-rbac --name 'ArcBoxSPN' --role "Owner" --scopes /subscriptions/$subscriptionId)
-spnClientId=$(echo $spn | jq .appId | tr -d '"')
-spnClientSecret=$(echo $spn | jq .password | tr -d '"')
-spnTenantId=$(az account show --query "tenantId" --output tsv)
+az provider show --namespace Microsoft.HybridCompute --query registrationState --output tsv
+az provider show --namespace Microsoft.GuestConfiguration --query registrationState --output tsv
+az provider show --namespace Microsoft.AzureArcData --query registrationState --output tsv
+az provider show --namespace Microsoft.OperationsManagement --query registrationState --output tsv
 
-echo -e "\nspnClientId     $spnClientId\nspnClientSecret $spnClientSecret\nspnTenantId     $spnTenantId\n"
+# Create service principal (this creates an app registration, and a role assignment too)
+$spn = az ad sp create-for-rbac --name 'ArcBoxSPN' --role "Owner" --scopes /subscriptions/$($subscription.id) | ConvertFrom-Json
+
+# List app registration
+az ad app list --query "[?displayName=='ArcBoxSPN'].{appId:appId,displayName:displayName}" --output table
+# List service principal (= enterprise app)
+az ad sp list --all --query "[?displayName=='ArcBoxSPN'].{appId:appId,displayName:displayName,objectId:id}"  --output table
+# List role assignment 
+az role assignment list --assignee $spn.appId
+
+# Delete in the correct order!
+#  1. Delete role assignment 
+#     az role assignment delete --assignee $spn.appId
+#
+#  2. Delete app registration (not service principal)
+#     az ad app delete --id $spn.appId
+#
+#  3. Delete service principal (= enterprise app)
+#     az ad sp delete --id $spn.appId
+
+
+Write-Host ""; `
+Write-Host "spnClientId:     $($spn.appId)"; `
+Write-Host "spnClientSecret: $($spn.password)"; `
+Write-Host "spnTenantId:     $($subscription.tenantId)"; `
+Write-Host "";
+
 
 cat ~/.ssh/id_rsa.pub
